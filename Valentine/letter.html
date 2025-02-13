@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Valentine Letter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff0f3;
+        }
+        
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #ff4d6d;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+        
+        .envelope::before {
+            content: "Click to Open";
+            position: absolute;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .letter {
+            position: absolute;
+            width: 750px;
+            height: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .letter img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+           
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope" onclick="openLetter()">
+        <div class="letter" id="letter">
+            <img src="letter.jpg" alt="Valentine's Letter">
+        </div>
+    </div>
+
+    <script>
+        function openLetter() {
+            document.querySelector('.letter').style.display = 'flex';
+            document.querySelector('.envelope').style.background = 'transparent';
+            document.querySelector('.envelope::before').content = '';
+        }
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Valentine's Baby</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fff0f3;
+            min-height: 100vh;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4d6d;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffb3c1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        .toggle-form {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .toggle-form a {
+            color: #ff4d6d;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .nav-bar {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-title {
+            color: #ff4d6d;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            width: auto;
+            padding: 8px 20px;
+            background: transparent;
+            color: #ff4d6d;
+            border: 2px solid #ff4d6d;
+        }
+
+        .gallery {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .gallery.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .heart-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 40px;
+            color: white;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+            z-index: 2;
+        }
+
+        .gallery-item:hover .heart-icon {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            display: block;
+        }
+
+        .modal-caption {
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            color: #333;
+            background: white;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .letter-btn {
+        display: block;
+        width: 200px;
+        height: 55px;
+        max-width: 300px;
+        margin: 20px auto;
+        padding: 15px;
+        background: #ff4d6d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        text-align: center;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .letter-btn:hover {
+        background: #e63950;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        width: 220px;
+        height: 65px;
+    }
+    </style>
+</head>
+<body>
+    <div id="loginContainer" class="auth-container">
+        <h1>Happy Valentine's Baby</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+                <div class="error-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+                <div class="error-message"></div>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="toggle-form">
+            <a id="showRegister">Don't have an account? Register</a>
+        </div>
+    </div>
+
+    <div id="registerContainer" class="auth-container hidden">
+        <h1>Create Account</h1>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" required>
+                <div class="error-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" required>
+                <div class="error-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required>
+                <div class="error-message"></div>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <div class="toggle-form">
+            <a id="showLogin">Already have an account? Login</a>
+        </div>
+    </div>
+
+    <div id="mainContent" class="hidden">
+        <div class="nav-bar">
+            <div class="nav-title">Art Gallery</div>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        <div class="gallery" id="gallery"></div>
+        <button id="openLetter" class="letter-btn">Aly's letter</button>
+    </div>
+
+
+    <div class="modal" id="imageModal">
+        <span class="close-modal">&times;</span>
+        <div class="modal-content">
+            <img class="modal-image" id="modalImage" src="" alt="Enlarged image">
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // DOM Elements
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const mainContent = document.getElementById('mainContent');
+        const gallery = document.getElementById('gallery');
+        
+        // Forms
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        // Toggle links
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+        
+        // Logout button
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Store users (in real app, this would be a database)
+        const users = new Map();
+        users.set('test@test.com', 'password');
+
+        // Toggle between login and register
+        showRegisterLink.addEventListener('click', () => {
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.remove('hidden');
+        });
+
+        showLoginLink.addEventListener('click', () => {
+            registerContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+        });
+
+        // Handle login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (users.has(email) && users.get(email) === password) {
+                showGallery();
+            } else {
+                showError('password', 'Invalid email or password');
+            }
+        });
+
+        // Handle registration
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showError('confirmPassword', 'Passwords do not match');
+                return;
+            }
+
+            users.set(email, password);
+            showGallery();
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener('click', () => {
+            mainContent.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+            loginForm.reset();
+        });
+
+        const captions = [
+            "12-14-2024",
+            "11-18-2024",
+            "11-10-2024",
+            "11-10-2024",
+            "10-27-2024",
+            "10-06-2024",
+            "08-29-2024",
+            "08-09-2024",
+            "07-25-2024",
+            "07-24-2024",
+            "08-29-2024",
+            "07-24-2024",
+            "07-24-2024",
+            "07-23-2024",
+            "07-16-2024",
+            "07-14-2024",
+            "11-18-2024",
+            "11-18-2024",
+            "09-21-2024",
+            "07-21-2024",
+            "11-19-2024",
+            "08-16-2024",
+            "2023",
+            "2024",
+        ];
+
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalCaption = document.getElementById('modalCaption');
+        const closeModal = document.querySelector('.close-modal');
+
+        function showGallery() {
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            
+            gallery.innerHTML = '';
+            
+            for (let i = 1; i <= 24; i++) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `
+                    <img src="${i}.jpg" alt="Valentine Memory ${i}">
+                    <div class="heart-icon"></div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    modalImage.src = `${i}.jpg`;
+                    modalCaption.textContent = captions[i-1] || 'Our special moment';
+                    modal.classList.add('active');
+                });
+                
+                gallery.appendChild(item);
+            }
+            
+            setTimeout(() => {
+                gallery.classList.add('visible');
+            }, 100);
+        }
+
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+            }
+        });
+
+
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const errorDiv = input.nextElementSibling;
+            errorDiv.textContent = message;
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(div => {
+                div.textContent = '';
+            });
+        }
+
+        document.getElementById("openLetter").addEventListener("click", function() {
+          window.location.href = "letter.html";
+      });
+    </script>
+</body>
+</html>
